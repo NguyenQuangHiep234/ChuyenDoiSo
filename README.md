@@ -4,7 +4,7 @@
     </a>
 </h2>
 <h2 align="center">
-    HỆ THỐNG TÌM KIẾM HÌNH ẢNH AI
+    HỆ THỐNG TÌM KIẾM HÌNH ẢNH NGƯỜI VIỆT NAM THEO MÔ TẢ NGÔN NGỮ
 </h2>
 
 <div align="center">
@@ -24,7 +24,7 @@
 
 ## 📖 1. Giới thiệu hệ thống
 
-Hệ thống **Tìm kiếm Hình ảnh AI** được xây dựng dựa trên mô hình **OpenCLIP đa ngôn ngữ (xlm-roberta-base-ViT-B-32)** nhằm:
+Hệ thống **Tìm kiếm hình ảnh người Việt Nam theo mô tả ngôn ngữ** được xây dựng dựa trên mô hình **OpenCLIP đa ngôn ngữ (xlm-roberta-base-ViT-B-32)** nhằm:
 
 - Hỗ trợ tìm kiếm hình ảnh người Việt Nam thông qua mô tả văn bản bằng **Tiếng Việt** hoặc **Tiếng Anh**.
 - Cung cấp giao diện web hiện đại, thân thiện với **Gradio**, cho phép người dùng nhập mô tả và nhận kết quả tức thì.

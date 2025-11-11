@@ -372,27 +372,29 @@ python app.py
 
 Nếu bạn cần trao đổi thêm hoặc muốn phát triển mở rộng hệ thống, vui lòng liên hệ:
 
-<table>
+<table border="0" cellspacing="0" cellpadding="0" style="border: none;">
 <tr>
-<td width="50%" valign="top">
+<td width="50%" valign="top" style="border: none; padding-right: 20px;">
 
 ### 👨‍💻 Tác giả
 
 **Nguyễn Quang Hiệp**
+
 - 📧 Email: quanghiep2342004@gmail.com
 - 📱 SĐT: 0396259480
 - 🌐 GitHub: [NguyenQuangHiep234](https://github.com/NguyenQuangHiep234)
 - 🏫 Trường: Đại học Đại Nam - Khoa CNTT
 
 </td>
-<td width="50%" valign="top">
+<td width="50%" valign="top" style="border: none; padding-left: 20px;">
 
 ### 👨‍💻 Đồng tác giả
 
 **Vũ Đức Anh**
+
 - 📧 Email: anhvuduc9204@gmail.com
-- 📱 SĐT: ************************
-- 🌐 GitHub: [#](https://github.com/*************)
+- 📱 SĐT: **********
+- 🌐 GitHub: [#](https://github.com/***)
 - 🏫 Trường: Đại học Đại Nam - Khoa CNTT
 
 </td>

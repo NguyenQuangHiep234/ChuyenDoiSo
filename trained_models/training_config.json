@@ -1,0 +1,35 @@
+{
+  "model_name": "xlm-roberta-base-ViT-B-32",
+  "pretrained": "laion5b_s13b_b90k",
+  "dataset_path": "data\\processed",
+  "n_images": 3003,
+  "embedding_dim": 512,
+  "batch_size": 32,
+  "device": "cpu",
+  "text_cache_size": 8082,
+  "captions_count": 8082,
+  "captions_images": 2898,
+  "text_cache_source": "captions",
+  "fine_tune_enabled": true,
+  "captions_file": "data\\captions_draft (2).json",
+  "fine_tune": {
+    "epochs": 1,
+    "batch_size": 16,
+    "lr": 5e-06,
+    "weight_decay": 0.01,
+    "gradient_accumulation_steps": 1,
+    "max_captions_per_image": 4,
+    "num_workers": 0,
+    "use_amp": false,
+    "save_every": 0,
+    "shuffle_captions": true,
+    "metrics": {
+      "epochs": 1,
+      "total_steps": 515,
+      "avg_loss": 1.218636278909387,
+      "epoch_losses": [
+        1.218636278909387
+      ]
+    }
+  }
+}

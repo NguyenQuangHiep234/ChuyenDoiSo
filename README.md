@@ -378,6 +378,12 @@ Nếu bạn cần trao đổi thêm hoặc muốn phát triển mở rộng hệ
 - 🌐 **GitHub:** [github.com/NguyenQuangHiep234]
 - 🏫 **Trường:** Đại học Đại Nam - Khoa Công nghệ Thông tin
 
+- 👨‍💻 **Đồng tác giả:** [Vũ Đức Anh]
+- 📧 **Email:** [anhvuduc9204@gmail.com]
+- - 📱 **SĐT:** [********]
+- 🌐 **GitHub:** [github.com/******]
+- 🏫 **Trường:** Đại học Đại Nam - Khoa Công nghệ Thông tin
+
 <br/>
 
 ---

@@ -92,6 +92,7 @@ ChuyenDoiSo/
 ```
 
 > 💡 **Lưu ý quan trọng**:
+>
 > - `captions_draft.json`: 6686 captions tiếng Việt dùng để fine-tune model
 > - `images_dowload.py`: Chỉ dùng 1 lần để tải ảnh, sau đó có thể bỏ qua
 > - `update_captions.py`: Dùng để đồng bộ metadata sau khi lọc ảnh thủ công
@@ -148,6 +149,7 @@ pip install -r requirements.txt
    ```
 
 **Cấu trúc dữ liệu cuối cùng:**
+
 ```
 data/
 ├── captions_draft.json    # ✅ 6686 items (image name + captions_vi)
@@ -209,22 +211,18 @@ python app.py
 3. Load embeddings từ `trained_models/`
 4. Khởi động Gradio server tại: **http://127.0.0.1:7860**
 
-
 ### 8️⃣ Sử dụng giao diện tìm kiếm
 
 <div align="center">
-  <table>
-    <tr>
-      <td align="center" width="50%">
-        <img src="docs/search_interface.png" alt="Search Interface" width="400"/><br/>
-        <i>Hình: Giao diện tìm kiếm</i>
-      </td>
-      <td align="center" width="50%">
-        <img src="docs/search_results.png" alt="Search Results" width="400"/><br/>
-        <i>Hình: Kết quả tìm kiếm</i>
-      </td>
-    </tr>
-  </table>
+  <p align="center">
+    <img src="docs/search_interface.png" alt="Giao diện tìm kiếm" width="700"/><br/>
+    <i><b>Hình 1:</b> Giao diện tìm kiếm - Nhập mô tả và điều chỉnh tham số</i>
+  </p>
+  <br/>
+  <p align="center">
+    <img src="docs/search_results.png" alt="Kết quả tìm kiếm" width="700"/><br/>
+    <i><b>Hình 2:</b> Kết quả tìm kiếm - Hiển thị ảnh kèm điểm similarity</i>
+  </p>
 </div>
 
 **Các bước tìm kiếm:**
@@ -331,7 +329,7 @@ python app.py
 **❌ "Dataset trống!"**
 
 - **Nguyên nhân**: Thư mục `data/processed/` không có ảnh
-- **Giải pháp**: 
+- **Giải pháp**:
   - Option 1: Copy ảnh có sẵn vào `data/processed/`
   - Option 2: Chạy `python images_dowload.py` để tải từ Pexels
 
@@ -343,7 +341,7 @@ python app.py
 **❌ Download model chậm**
 
 - **Nguyên nhân**: Model 1.46GB tải từ Hugging Face lần đầu
-- **Giải pháp**: 
+- **Giải pháp**:
   - Đợi ~15-20 phút để tải xong
   - Lần sau model sẽ dùng từ cache local (~/.cache/huggingface/)
 

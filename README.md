@@ -209,7 +209,6 @@ python app.py
 3. Load embeddings từ `trained_models/`
 4. Khởi động Gradio server tại: **http://127.0.0.1:7860**
 
-> ⚠️ **Lưu ý**: Nếu gặp lỗi "Trained model not found", hãy chạy `python train.py` trước!
 
 ### 8️⃣ Sử dụng giao diện tìm kiếm
 

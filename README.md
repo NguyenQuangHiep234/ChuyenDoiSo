@@ -90,8 +90,6 @@ ChuyenDoiSo/
 ├── evaluation_results/
 │   ├── topk_accuracy.png           # 📈 Biểu đồ Top-K Accuracy
 │   ├── similarity_distribution.png # 📉 Phân bố điểm similarity
-│   ├── confusion_matrix.png        # 🎯 Ma trận nhầm lẫn giữa categories
-│   ├── classification_report.txt   # 📝 Báo cáo precision/recall/f1-score
 │   └── evaluation_summary.json     # 📊 Tổng hợp metrics đánh giá
 ├── .gitignore                      # 🚫 File ignore cho Git
 ├── requirements.txt                # 📦 Danh sách Python dependencies
@@ -215,14 +213,11 @@ python evaluate_model.py
 
 1. **Top-K Accuracy** - Đánh giá khả năng tìm đúng ảnh trong top K kết quả
 2. **Similarity Distribution** - Phân tích phân bố điểm similarity (correct vs incorrect)
-3. **Confusion Matrix** - Ma trận nhầm lẫn giữa 11 categories
 
 **Kết quả lưu vào `evaluation_results/`:**
 
 - `topk_accuracy.png` - Biểu đồ Top-1: 42.9%, Top-10: 99.6%
 - `similarity_distribution.png` - Mean correct: 0.587, Mean incorrect: 0.324
-- `confusion_matrix.png` - Heatmap 11x11 categories
-- `classification_report.txt` - Precision, Recall, F1-score chi tiết
 - `evaluation_summary.json` - Tổng hợp tất cả metrics
 
 **Thời gian:** ~5-10 phút trên CPU
@@ -305,7 +300,7 @@ python app.py
 - 🔄 **Quản lý metadata**: `update_captions.py` đồng bộ sau khi lọc ảnh
 - 💻 **CPU/GPU Support**: Tự động detect và tối ưu theo phần cứng
 - 🎨 **Giao diện đẹp**: Gradio UI hiện đại với color scheme Đại Nam
-- 📊 **Đánh giá chi tiết**: Metrics đa dạng (Top-K, Confusion Matrix, Similarity Distribution)
+- 📊 **Đánh giá chi tiết**: Metrics đa dạng (Top-K Accuracy, Similarity Distribution)
 
 ## 🧠 6. Quy trình hoạt động
 
@@ -338,9 +333,8 @@ python app.py
 2. Extract categories từ tên file ảnh (11 categories).
 3. **Top-K Accuracy**: Tính accuracy cho K=1,3,5,10 với category queries.
 4. **Similarity Distribution**: Phân tích phân bố điểm số correct vs incorrect matches.
-5. **Confusion Matrix**: Tạo ma trận nhầm lẫn giữa các categories.
-6. Vẽ các biểu đồ (matplotlib/seaborn) và lưu vào `evaluation_results/`.
-7. Tạo báo cáo classification report (precision, recall, f1-score).
+5. Vẽ các biểu đồ (matplotlib/seaborn) và lưu vào `evaluation_results/`.
+6. Tạo file JSON tổng hợp tất cả metrics.
 
 ### `app.py` (Giao diện Web)
 
@@ -378,19 +372,7 @@ Folder chứa các kết quả đánh giá model sau khi chạy `evaluate_model.
 
   - Subplot 1: Histogram phân bố tất cả similarity scores
   - Subplot 2: So sánh Correct Match (mean: 0.587) vs Incorrect Match (mean: 0.324)
-  - Metrics: Separation, Cohen's d, AUROC
-
-- **`confusion_matrix.png`**: Ma trận nhầm lẫn 11x11
-
-  - Heatmap cho 11 categories (children, elderly, farmers, fisherman...)
-  - Diagonal cao = phân loại tốt
-  - Off-diagonal = nhầm lẫn giữa categories
-
-- **`classification_report.txt`**: Báo cáo văn bản chi tiết
-
-  - Precision, Recall, F1-score cho từng category
-  - Macro avg, Weighted avg
-  - Số lượng samples mỗi category
+  - Metrics: Separation (0.263), Cohen's d (2.41), AUROC
 
 - **`evaluation_summary.json`**: Tổng hợp metrics dạng JSON
   ```json

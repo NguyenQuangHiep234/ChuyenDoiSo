@@ -66,29 +66,35 @@ Hệ thống **Tìm kiếm Hình ảnh AI** được xây dựng dựa trên mô
 
 ```
 ChuyenDoiSo/
-├── app.py                          # 🌐 Ứng dụng tìm kiếm Gradio
-├── train.py                        # 🔥 Fine-tuning & tính embeddings
-├── evaluate_model.py               # 📊 Đánh giá model với confusion matrix
+├── app.py                          # 🌐 Ứng dụng web tìm kiếm với Gradio UI
+├── train.py                        # 🔥 Fine-tuning model & tính embeddings
+├── images_dowload.py               # � Script tải ảnh từ Pexels API
+├── update_captions.py              # 🔄 Cập nhật metadata sau lọc ảnh
 ├── models/
-│   └── clip_model.py               # Wrapper CLIP encode ảnh & text
+│   └── clip_model.py               # 🤖 Wrapper OpenCLIP (encode image & text)
 ├── utils/
-│   ├── data_loader.py              # Quản lý metadata & embedding
-│   ├── search_engine.py            # Logic tìm kiếm và cache
-│   └── visualizer.py               # Công cụ trực quan hoá kết quả
+│   ├── data_loader.py              # 📂 Quản lý dataset và embeddings
+│   ├── search_engine.py            # 🔍 Logic tìm kiếm và similarity matching
+│   └── visualizer.py               # 📊 Công cụ hiển thị kết quả Gradio
 ├── data/
-│   ├── captions_draft.json         # 6686 captions tiếng Việt cho fine-tuning
-│   └── processed/                  # 3003 ảnh người Việt Nam
+│   ├── captions_all.json           # 📝 Captions gốc từ Pexels
+│   ├── captions_clean.json         # 📝 Captions sau khi lọc thủ công
+│   ├── captions_draft.json         # 📝 6686 captions tiếng Việt (fine-tuning)
+│   └── processed/                  # 🖼️ 3003 ảnh người Việt Nam đã xử lý
 ├── trained_models/
-│   ├── image_embeddings.pkl        # Embedding ảnh sau training
-│   ├── fine_tuned_clip_latest.pt   # Model weights sau fine-tuning
-│   ├── text_embeddings_cache.pkl   # Cache query phổ biến
-│   └── training_config.json        # Cấu hình training
-├── docs/                           # Logo và hình ảnh minh họa
-├── requirements.txt                # Danh sách dependencies
-└── README.md                       # Tài liệu dự án
+│   ├── image_embeddings.pkl        # 💾 Embedding 512-dim của 3003 ảnh
+│   ├── fine_tuned_clip_latest.pt   # 💾 Model weights sau fine-tuning
+│   ├── text_embeddings_cache.pkl   # 💾 Cache embedding cho query phổ biến
+│   └── training_config.json        # ⚙️ Cấu hình training (epochs, batch_size...)
+├── .gitignore                      # 🚫 File ignore cho Git
+├── requirements.txt                # 📦 Danh sách Python dependencies
+└── README.md                       # 📖 Tài liệu hướng dẫn dự án
 ```
 
-> 💡 **Lưu ý**: File `captions_draft.json` chứa 6686 captions tiếng Việt được sử dụng để fine-tune model, giúp cải thiện độ chính xác trong ngữ cảnh văn hóa Việt Nam.
+> 💡 **Lưu ý quan trọng**:
+> - `captions_draft.json`: 6686 captions tiếng Việt dùng để fine-tune model
+> - `images_dowload.py`: Chỉ dùng 1 lần để tải ảnh, sau đó có thể bỏ qua
+> - `update_captions.py`: Dùng để đồng bộ metadata sau khi lọc ảnh thủ công
 
 ## ⚙️ 4. Các bước cài đặt & sử dụng
 
@@ -116,15 +122,44 @@ pip install -r requirements.txt
 ```
 
 **Dependencies chính:**
+
 - `torch` - PyTorch framework
 - `open-clip-torch` - OpenCLIP model
 - `gradio` - Web UI framework
 - `pillow`, `numpy` - Xử lý ảnh và tính toán
 - `scikit-learn`, `seaborn`, `matplotlib` - Đánh giá model
 
-### 4️⃣ Kiểm tra dữ liệu
+### 4️⃣ Chuẩn bị dữ liệu (Optional - nếu chưa có)
+
+**Nếu bạn đã có folder `data/processed/` với ảnh sẵn → Bỏ qua bước này!**
+
+**Nếu muốn tự tải ảnh từ đầu:**
+
+1. Lấy API key từ [Pexels](https://www.pexels.com/api/)
+2. Cập nhật `PEXELS_KEY` trong `images_dowload.py`
+3. Chạy script tải ảnh:
+   ```bash
+   python images_dowload.py
+   ```
+4. Lọc ảnh thủ công (xóa ảnh không phù hợp)
+5. Cập nhật metadata:
+   ```bash
+   python update_captions.py
+   ```
+
+**Cấu trúc dữ liệu cuối cùng:**
+```
+data/
+├── captions_draft.json    # ✅ 6686 items (image name + captions_vi)
+└── processed/             # ✅ 3003 ảnh .jpg
+```
+
+### 5️⃣ Kiểm tra dữ liệu
+
+### 5️⃣ Kiểm tra dữ liệu
 
 Đảm bảo cấu trúc thư mục như sau:
+
 ```
 data/
 ├── captions_draft.json    # ✅ File captions tiếng Việt (6686 items)
@@ -132,17 +167,19 @@ data/
 ```
 
 **Kiểm tra nhanh:**
+
 ```bash
-python -c "from pathlib import Path; print(f'Images: {len(list(Path(\"data/processed\").glob(\"*.jpg\")))}'); print(f'Captions: {Path(\"data/captions_draft.json\").exists()}')"
+python -c "from pathlib import Path; import json; print(f'Images: {len(list(Path(\"data/processed\").glob(\"*.jpg\")))}'); data=json.load(open(\"data/captions_draft.json\",encoding=\"utf-8\")); print(f'Captions: {len(data)} items')"
 ```
 
-### 5️⃣ Training model (Fine-tuning + Embeddings)
+### 6️⃣ Training model (Fine-tuning + Embeddings)
 
 ```bash
 python train.py
 ```
 
 **Quá trình training sẽ:**
+
 1. Load OpenCLIP model (~1.46GB - tải lần đầu sẽ mất ~15-20 phút)
 2. Fine-tune model với 6686 captions tiếng Việt (1 epoch, ~515 batches)
 3. Tính embeddings cho 3003 ảnh
@@ -153,22 +190,28 @@ python train.py
    - `training_config.json` - Thông tin cấu hình
 
 **Thời gian dự kiến:**
-- **CPU**: 20-40 phút
-- **GPU**: 5-15 phút
 
-### 6️⃣ Chạy ứng dụng web
+- **CPU**: 20-40 phút
+- **GPU (CUDA)**: 5-15 phút
+
+> 💡 **Lưu ý**: Lần đầu tiên sẽ tải OpenCLIP model từ internet (~1.46GB), mất khoảng 15-20 phút tùy tốc độ mạng.
+
+### 7️⃣ Chạy ứng dụng web
 
 ```bash
 python app.py
 ```
 
 **Hệ thống sẽ:**
+
 1. Load dataset (3003 ảnh)
 2. Load CLIP model
 3. Load embeddings từ `trained_models/`
 4. Khởi động Gradio server tại: **http://127.0.0.1:7860**
 
-### 7️⃣ Sử dụng giao diện tìm kiếm
+> ⚠️ **Lưu ý**: Nếu gặp lỗi "Trained model not found", hãy chạy `python train.py` trước!
+
+### 8️⃣ Sử dụng giao diện tìm kiếm
 
 <div align="center">
   <table>
@@ -186,27 +229,17 @@ python app.py
 </div>
 
 **Các bước tìm kiếm:**
+
 1. **Nhập mô tả** - Ví dụ: "người phụ nữ mặc áo dài đỏ"
 2. **Điều chỉnh tham số**:
    - Số lượng kết quả: 3-30 ảnh
    - Ngưỡng độ chính xác: 0.0-0.5 (càng cao càng strict)
 3. **Nhấn "Tìm kiếm"** - Xem kết quả với điểm similarity
 
-### 8️⃣ Đánh giá model (Optional)
-
-```bash
-python evaluate_model.py
-```
-
-Kết quả được lưu trong `evaluation_results/`:
-- `confusion_matrix.png` - Ma trận nhầm lẫn
-- `per_category_accuracy.png` - Độ chính xác theo category
-- `classification_report.txt` - Báo cáo chi tiết
-- `evaluation_summary.json` - Tổng kết metrics
-
 ### 9️⃣ Ví dụ query phổ biến
 
 **Tiếng Việt:**
+
 - "người phụ nữ mặc áo dài đỏ"
 - "trẻ em đang vui chơi"
 - "nông dân đang làm việc trên ruộng"
@@ -215,6 +248,7 @@ Kết quả được lưu trong `evaluation_results/`:
 - "gia đình Việt Nam sum họp"
 
 **Tiếng Anh:**
+
 - "elderly woman wearing traditional clothes"
 - "vietnamese market seller"
 - "smiling person in ao dai"
@@ -232,16 +266,32 @@ Kết quả được lưu trong `evaluation_results/`:
 
 - 🌐 **Đa ngôn ngữ**: Hỗ trợ tìm kiếm bằng Tiếng Việt và Tiếng Anh
 - 🧠 **Fine-tuned Model**: Được huấn luyện với 6686 captions tiếng Việt
-- ⚡ **Tìm kiếm tức thì**: Kết quả hiện trong vài giây
-- 🎯 **Độ chính xác cao**: Similarity score cho mỗi kết quả
-- 💾 **Embedding Cache**: Lưu trữ embeddings để tăng tốc
-- 📊 **Evaluation Tools**: Công cụ đánh giá với confusion matrix
-- 💻 **CPU/GPU Support**: Chạy được trên cả CPU và GPU
-- 🎨 **Giao diện đẹp**: Gradio UI hiện đại với màu sắc Đại Nam
+- ⚡ **Tìm kiếm tức thì**: Kết quả hiện trong vài giây với cosine similarity
+- 🎯 **Độ chính xác cao**: Similarity score kèm mỗi kết quả (0.0-1.0)
+- 💾 **Embedding Cache**: Lưu embeddings để không cần tính lại
+- � **Tải ảnh tự động**: Script `images_dowload.py` tích hợp Pexels API
+- 🔄 **Quản lý metadata**: `update_captions.py` đồng bộ sau khi lọc ảnh
+- 💻 **CPU/GPU Support**: Tự động detect và tối ưu theo phần cứng
+- 🎨 **Giao diện đẹp**: Gradio UI hiện đại với color scheme Đại Nam
 
 ## 🧠 6. Quy trình hoạt động
 
-### `train.py`
+### `images_dowload.py` (Tải dữ liệu)
+
+1. Kết nối với Pexels API sử dụng API key.
+2. Tìm kiếm ảnh theo 11 keywords về người Việt Nam.
+3. Tải ảnh original và resize về 512x512px.
+4. Lưu captions gốc vào `captions_all.json`.
+5. Tự động loại bỏ ảnh trùng lặp bằng hash MD5.
+
+### `update_captions.py` (Cập nhật metadata)
+
+1. Đọc `captions_clean.json` (metadata cũ).
+2. Lấy danh sách ảnh còn tồn tại trong `data/processed/`.
+3. Lọc bỏ entries của ảnh đã xóa thủ công.
+4. Lưu metadata mới vào file JSON.
+
+### `train.py` (Training & Fine-tuning)
 
 1. Load mô hình OpenCLIP (xlm-roberta-base-ViT-B-32).
 2. **Fine-tuning**: Train với 6686 cặp (ảnh, caption tiếng Việt) sử dụng contrastive learning.
@@ -257,39 +307,60 @@ Kết quả được lưu trong `evaluation_results/`:
 4. Tính cosine similarity với tất cả ảnh.
 5. Trả về top-k ảnh có similarity cao nhất, kèm điểm số.
 
-### `evaluate_model.py`
+### `models/clip_model.py` (CLIP Wrapper)
 
-1. Dò nhãn thật từ tên file ảnh (Vietnamese_children_, Vietnamese_elderly_, ...).
-2. Dự đoán category tốt nhất qua CLIP.
-3. Tạo confusion matrix và báo cáo precision/recall.
-4. Xuất kết quả vào `evaluation_results/`.
+1. Load OpenCLIP với model `xlm-roberta-base-ViT-B-32`.
+2. Cung cấp phương thức `encode_image()` và `encode_text()`.
+3. Xử lý preprocessing (resize, normalize) cho ảnh.
+4. Tokenize và encode text thành vector 512-dim.
+
+### `utils/` (Utilities)
+
+- **`data_loader.py`**: Quản lý ImageDataset, load/save embeddings
+- **`search_engine.py`**: ImageSearchEngine với cosine similarity matching
+- **`visualizer.py`**: Format kết quả cho Gradio Gallery
 
 ## 🔧 7. Ghi chú & Khắc phục
 
 ### Lỗi thường gặp:
 
 **❌ "Trained model not found!"**
+
 - **Nguyên nhân**: Chưa chạy `train.py`
 - **Giải pháp**: `python train.py` để tạo embeddings
 
 **❌ "Dataset trống!"**
+
 - **Nguyên nhân**: Thư mục `data/processed/` không có ảnh
-- **Giải pháp**: Copy ảnh vào `data/processed/`
+- **Giải pháp**: 
+  - Option 1: Copy ảnh có sẵn vào `data/processed/`
+  - Option 2: Chạy `python images_dowload.py` để tải từ Pexels
 
 **❌ "CUDA out of memory"**
+
 - **Nguyên nhân**: GPU không đủ RAM
 - **Giải pháp**: Giảm `batch_size` trong `train.py` (dòng 716) hoặc dùng CPU
 
 **❌ Download model chậm**
-- **Nguyên nhân**: Model 1.46GB tải từ internet lần đầu
-- **Giải pháp**: Đợi ~15-20 phút, lần sau sẽ dùng cache
+
+- **Nguyên nhân**: Model 1.46GB tải từ Hugging Face lần đầu
+- **Giải pháp**: 
+  - Đợi ~15-20 phút để tải xong
+  - Lần sau model sẽ dùng từ cache local (~/.cache/huggingface/)
+
+**❌ "Pexels API limit exceeded"**
+
+- **Nguyên nhân**: Vượt quota API Pexels (200 requests/hour)
+- **Giải pháp**: Đợi 1 giờ hoặc đăng ký API key mới
 
 ### Tips tối ưu:
 
-- 🚀 **Training nhanh hơn**: Dùng GPU nếu có (tự động detect)
-- 💾 **Tiết kiệm RAM**: Giảm `batch_size` từ 16 xuống 8
-- 🎯 **Tăng độ chính xác**: Tăng `epochs` trong FineTuneConfig (dòng 715)
-- ⚡ **Tìm kiếm nhanh hơn**: Tăng `min_similarity` để lọc kết quả
+- 🚀 **Training nhanh hơn**: Dùng GPU với CUDA nếu có (auto-detect)
+- 💾 **Tiết kiệm RAM**: Giảm `batch_size` từ 16→8 (train.py dòng 716)
+- 🎯 **Tăng độ chính xác**: Tăng `epochs` từ 1→3 (train.py dòng 715)
+- ⚡ **Tìm kiếm nhanh hơn**: Tăng `min_similarity` từ 0.05→0.15
+- 📥 **Tải ảnh nhiều hơn**: Sửa `per_page` và `max_pages` trong images_dowload.py
+- 🔄 **Re-train từ đầu**: Xóa thư mục `trained_models/` trước khi train
 
 ## 📚 8. Tài liệu tham khảo
 
@@ -298,15 +369,16 @@ Kết quả được lưu trong `evaluation_results/`:
 - [Gradio Documentation](https://gradio.app/docs/) - Web UI framework
 - [PyTorch Documentation](https://pytorch.org/docs/) - Deep learning framework
 - [XLM-RoBERTa Model](https://huggingface.co/xlm-roberta-base) - Multilingual language model
+- [Pexels API](https://www.pexels.com/api/documentation/) - Free stock photos API
 
 ## ✉️ 9. Liên hệ
 
 Nếu bạn cần trao đổi thêm hoặc muốn phát triển mở rộng hệ thống, vui lòng liên hệ:
 
-- 👨‍💻 **Tác giả:** [Tên của bạn]
-- 📧 **Email:** [email@example.com]
-- 📱 **SĐT:** [0xxxxxxxxx]
-- 🌐 **GitHub:** [github.com/yourusername]
+- 👨‍💻 **Tác giả:** [Nguyễn Quang Hiệp]
+- 📧 **Email:** [quanghiep2342004@gmail.com]
+- 📱 **SĐT:** [0396259480]
+- 🌐 **GitHub:** [github.com/NguyenQuangHiep234]
 - 🏫 **Trường:** Đại học Đại Nam - Khoa Công nghệ Thông tin
 
 <br/>
@@ -315,5 +387,4 @@ Nếu bạn cần trao đổi thêm hoặc muốn phát triển mở rộng hệ
 
 <div align="center">
   <p>© 2025 AIoTLab, Faculty of Information Technology, DaiNam University. All rights reserved.</p>
-  <p>Made with ❤️ using OpenCLIP & Gradio</p>
 </div>
